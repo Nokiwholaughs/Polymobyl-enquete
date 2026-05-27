@@ -16,16 +16,31 @@
             height: 100vh;
             margin: 0;
             text-align: center;
+            overflow: hidden; /* Empêche le défilement dû au fond matrix */
         }
+        
+        /* Le fond Matrix */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1; /* Place le canvas derrière tout le reste */
+        }
+
         .container {
             border: 2px solid #0f0;
             padding: 30px;
+            /* Fond noir semi-transparent pour lire le texte malgré la pluie Matrix */
+            background-color: rgba(0, 0, 0, 0.85); 
             box-shadow: 0 0 15px #0f0;
             max-width: 500px;
             width: 90%;
+            z-index: 1; /* Place la boîte au premier plan */
         }
+        
         h1 { color: red; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
+        
         input {
             background-color: #000;
             color: #0f0;
@@ -36,6 +51,8 @@
             font-family: inherit;
             text-transform: uppercase;
         }
+        input:focus { outline: none; box-shadow: 0 0 10px #0f0; }
+        
         button {
             background-color: #0f0;
             color: #000;
@@ -47,46 +64,146 @@
             margin-top: 15px;
             width: 100%;
         }
-        button:hover { background-color: #fff; }
+        button:hover { background-color: #fff; box-shadow: 0 0 15px #fff;}
+        
         .error-msg { color: red; margin-top: 15px; display: none; }
-        .hint { font-size: 0.9em; color: #aaa; margin: 5px 0; }
+        
+        /* Les indices avec le curseur qui clignote */
+        .hint { font-size: 0.9em; color: #aaa; margin: 5px 0; min-height: 1.2em; }
+        .cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
     </style>
 </head>
 <body>
+    <canvas id="matrix"></canvas>
+
     <div class="container">
         <h1>⚠ ALERTE ROUGE ⚠</h1>
         <p><strong>Serveur Polymobyl hors ligne.</strong></p>
         
-        <div style="margin: 20px 0; border: 1px dashed #0f0; padding: 10px;">
-            <p class="hint">"Mon nom est celui qui régit... avec la première lettre de mon prénom au début"</p>
-            <p class="hint">"Je suis né le jour où l'entreprise c'est créée..."</p>
-            <p class="hint">"...et ma femme a inspiré ma sécurité."</p>
+        <div style="margin: 20px 0; border: 1px dashed #0f0; padding: 10px; text-align: left;">
+            <p class="hint" id="hint1"></p>
+            <p class="hint" id="hint2"></p>
+            <p class="hint" id="hint3"></p>
         </div>
 
-        <h3>ACCÈS ADMINISTRATEUR</h3>
-        <input type="text" id="username" placeholder="Identifiant du pirate">
-        <input type="password" id="password" placeholder="Mot de passe">
-        <button onclick="checkLogin()">RESTAURER LE SYSTÈME</button>
-        <p class="error-msg" id="errorMsg">Accès refusé. Données corrompues.</p>
+        <div id="login-section" style="display: none;">
+            <h3>ACCÈS ADMINISTRATEUR</h3>
+            <input type="text" id="username" placeholder="Identifiant du pirate">
+            <input type="password" id="password" placeholder="Mot de passe">
+            <button onclick="checkLogin()">RESTAURER LE SYSTÈME</button>
+            <p class="error-msg" id="errorMsg">Accès refusé. Données corrompues.</p>
+        </div>
     </div>
 
     <script>
+        // ==========================================
+        // 1. EFFET MACHINE À ÉCRIRE
+        // ==========================================
+        const hints = [
+            "\"Mon nom est celui qui régit... avec la première lettre de mon prénom au début\"",
+            "\"Je suis né le jour où l'entreprise c'est créée...\"",
+            "\"...et ma femme a inspiré ma sécurité.\""
+        ];
+        
+        let currentHint = 0;
+        let currentChar = 0;
+        
+        function typeWriter() {
+            if (currentHint < hints.length) {
+                const element = document.getElementById('hint' + (currentHint + 1));
+                
+                // Ajoute la classe curseur à la ligne active
+                element.classList.add('cursor');
+                
+                if (currentChar < hints[currentHint].length) {
+                    element.innerHTML += hints[currentHint].charAt(currentChar);
+                    currentChar++;
+                    // Vitesse de frappe (aléatoire pour faire plus "humain")
+                    setTimeout(typeWriter, Math.random() * 50 + 30); 
+                } else {
+                    // Ligne terminée, on enlève le curseur et on passe à la suivante
+                    element.classList.remove('cursor');
+                    currentHint++;
+                    currentChar = 0;
+                    setTimeout(typeWriter, 500); // Pause entre deux phrases
+                }
+            } else {
+                // Quand tout le texte est écrit, on affiche le formulaire
+                document.getElementById('login-section').style.display = 'block';
+            }
+        }
+
+        // On lance l'effet machine à écrire 1 seconde après le chargement
+        setTimeout(typeWriter, 1000);
+
+        // ==========================================
+        // 2. VÉRIFICATION DU MOT DE PASSE (Inchangé)
+        // ==========================================
         function checkLogin() {
-            // On récupère les valeurs et on les force en majuscules sans espaces
             const user = document.getElementById('username').value.trim().toUpperCase();
             const pass = document.getElementById('password').value.trim().toUpperCase();
             const errorMsg = document.getElementById('errorMsg');
 
-            // Vérification des codes
             if (user === 'SPASCAL' && pass === '1986ALEXANDRA') {
-                // REDIRECTION EN CAS DE SUCCÈS
                 window.location.href = "https://www.polymobyl.com/qui-sommes-nous/"; 
             } else {
-                // MESSAGE D'ERREUR
                 errorMsg.style.display = 'block';
                 setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
             }
         }
+
+        // ==========================================
+        // 3. EFFET PLUIE MATRIX EN ARRIÈRE-PLAN
+        // ==========================================
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        // Ajuster la taille du canvas à l'écran
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        // Initialisation des gouttes
+        for(let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            // Fond noir avec opacité pour créer la traînée (fade effect)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Couleur et police du texte Matrix
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+
+            for(let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Réinitialise la goutte en haut de façon aléatoire
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        // Rafraîchir l'animation Matrix toutes les 33 millisecondes
+        setInterval(drawMatrix, 33);
+
+        // Ajustement si la fenêtre est redimensionnée
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
