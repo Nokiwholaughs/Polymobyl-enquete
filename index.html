@@ -16,29 +16,34 @@
             height: 100vh;
             margin: 0;
             text-align: center;
-            overflow: hidden; /* Empêche le défilement dû au fond matrix */
+            overflow: hidden;
         }
         
-        /* Le fond Matrix */
         canvas {
             position: fixed;
             top: 0;
             left: 0;
-            z-index: -1; /* Place le canvas derrière tout le reste */
+            z-index: -1;
         }
 
         .container {
             border: 2px solid #0f0;
             padding: 30px;
-            /* Fond noir semi-transparent pour lire le texte malgré la pluie Matrix */
             background-color: rgba(0, 0, 0, 0.85); 
             box-shadow: 0 0 15px #0f0;
             max-width: 500px;
             width: 90%;
-            z-index: 1; /* Place la boîte au premier plan */
+            z-index: 1;
+        }
+
+        .container.exploded {
+            border-color: red;
+            box-shadow: 0 0 25px red;
+            color: red;
         }
         
         h1 { color: red; animation: blink 1s infinite; }
+        .boom-title { color: red; font-size: 2.5em; text-shadow: 0 0 10px red; }
         @keyframes blink { 50% { opacity: 0; } }
         
         input {
@@ -50,8 +55,11 @@
             width: calc(100% - 22px);
             font-family: inherit;
             text-transform: uppercase;
+            text-align: center;
         }
         input:focus { outline: none; box-shadow: 0 0 10px #0f0; }
+        .exploded input { border-color: red; color: red; }
+        .exploded input:focus { box-shadow: 0 0 10px red; }
         
         button {
             background-color: #0f0;
@@ -66,20 +74,29 @@
         }
         button:hover { background-color: #fff; box-shadow: 0 0 15px #fff;}
         
+        .btn-explosion {
+            background-color: red;
+            color: #fff;
+        }
+        .btn-explosion:hover { background-color: #fff; color: #000; box-shadow: 0 0 15px red; }
+
         .error-msg { color: red; margin-top: 15px; display: none; }
-        
-        /* Les indices avec le curseur qui clignote */
         .hint { font-size: 0.9em; color: #aaa; margin: 5px 0; min-height: 1.2em; }
-        .cursor::after {
-            content: '|';
-            animation: blink 1s infinite;
+        .cursor::after { content: '|'; animation: blink 1s infinite; }
+
+        .timer {
+            font-size: 4em;
+            color: red;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 0 10px red;
         }
     </style>
 </head>
 <body>
     <canvas id="matrix"></canvas>
 
-    <div class="container">
+    <div class="container" id="screen-login">
         <h1>⚠ ALERTE ROUGE ⚠</h1>
         <p><strong>Serveur Polymobyl hors ligne.</strong></p>
         
@@ -98,57 +115,95 @@
         </div>
     </div>
 
+    <div class="container" id="screen-countdown" style="display: none;">
+        <h1 style="color: orange;">⚠ PROTOCOLE DE SÉCURITÉ ACCÉLÉRÉ ⚠</h1>
+        <p>Le pirate a lancé un script d'effacement final !</p>
+        <p><strong>Question : Quel âge a Polymobyl cette année ?</strong></p>
+        
+        <div class="timer" id="countdown-display">5</div>
+
+        <input type="number" id="age-input" placeholder="Entrez l'âge rapidement !" onkeyup="if(event.keyCode===13) checkAge()">
+        <button onclick="checkAge()">DÉSAMORCER</button>
+    </div>
+
+    <!-- ================= SCÈNE 3 : INTERFACE ADMIN (SERVEURS) ================= -->
+    <div class="container" id="screen-admin" style="display: none;">
+        <h1 style="color: #0f0; animation: none;">💻 INTERFACE DE MAINTENANCE v4.0</h1>
+        <p style="color: #0f0;"><strong>STATUT : SERVEURS HORS LIGNE</strong></p>
+        <p>Pour relancer le serveur central de signalétique, confirmez la clé d'identification de l'entreprise.</p>
+        
+        <div style="margin: 20px 0; border: 1px dashed #0f0; padding: 15px; text-align: left; color: #aaa;">
+            <p><em id="admin-hint" class="hint"></em></p>
+        </div>
+
+        <!-- Section cachée pendant l'écriture -->
+        <div id="admin-login-section" style="display: none;">
+            <input type="text" id="admin-input" placeholder="Entrez la clé d'identification" onkeyup="if(event.keyCode===13) checkAdmin()">
+            <button onclick="checkAdmin()">RÉPARER LES SERVEURS</button>
+        </div>
+    </div>
+
+    <!-- ================= SCÈNE 4 : EXPLOSION ================= -->
+    <div class="container exploded" id="screen-explosion" style="display: none;">
+        <div class="boom-title">💥 BOOM ! 💥</div>
+        <h2>LE SERVEUR A EXPLOSÉ</h2>
+        <p>Le système a détecté une surchauffe critique suite à votre mauvaise réponse.</p>
+        <button class="btn-explosion" onclick="retryAdmin()">RÉESSAYER LA RÉPARATION</button>
+    </div>
+
+    <!-- ================= SCÈNE 5 : SUCCÈS ================= -->
+    <div class="container" id="screen-success" style="display: none; border-color: #fff; box-shadow: 0 0 25px #fff; color: #fff;">
+        <h1 style="color: #0f0; text-shadow: 0 0 10px #0f0; animation: none;">✅ FÉLICITATIONS ! ✅</h1>
+        <p><strong>Système entièrement restauré.</strong></p>
+        <p>La base de données de Polymobyl est sauvée. Merci pour votre intervention rapide !</p>
+        <button style="background-color: #fff; color: #000;" onclick="window.location.href='https://www.polymobyl.com/qui-sommes-nous/'">ACCÉDER AU SITE</button>
+        <button style="background-color: #333; color: #fff; margin-top: 10px;" onclick="restartGame()">RECOMMENCER LE JEU</button>
+    </div>
+
     <script>
+        // Gestion globale des écrans
+        function changeScreen(currentId, nextId) {
+            document.getElementById(currentId).style.display = 'none';
+            document.getElementById(nextId).style.display = 'block';
+        }
+
         // ==========================================
-        // 1. EFFET MACHINE À ÉCRIRE
+        // LOGIQUE ÉCRAN 1 : CONNEXION
         // ==========================================
         const hints = [
             "\"Mon nom est celui qui régit actuellement...avec la première lettre de mon prénom au début\"",
             "\"J'adore l'année où l'entreprise s'est créée...\"",
             "\"...et ma femme a inspiré ma sécurité.\""
         ];
-        
-        let currentHint = 0;
-        let currentChar = 0;
+        let currentHint = 0; let currentChar = 0;
         
         function typeWriter() {
             if (currentHint < hints.length) {
                 const element = document.getElementById('hint' + (currentHint + 1));
-                
-                // Ajoute la classe curseur à la ligne active
                 element.classList.add('cursor');
-                
                 if (currentChar < hints[currentHint].length) {
                     element.innerHTML += hints[currentHint].charAt(currentChar);
                     currentChar++;
-                    // Vitesse de frappe (aléatoire pour faire plus "humain")
-                    setTimeout(typeWriter, Math.random() * 50 + 30); 
+                    setTimeout(typeWriter, Math.random() * 40 + 20); 
                 } else {
-                    // Ligne terminée, on enlève le curseur et on passe à la suivante
                     element.classList.remove('cursor');
-                    currentHint++;
-                    currentChar = 0;
-                    setTimeout(typeWriter, 500); // Pause entre deux phrases
+                    currentHint++; currentChar = 0;
+                    setTimeout(typeWriter, 400);
                 }
             } else {
-                // Quand tout le texte est écrit, on affiche le formulaire
                 document.getElementById('login-section').style.display = 'block';
             }
         }
-
-        // On lance l'effet machine à écrire 1 seconde après le chargement
         setTimeout(typeWriter, 1000);
 
-        // ==========================================
-        // 2. VÉRIFICATION DU MOT DE PASSE (Inchangé)
-        // ==========================================
         function checkLogin() {
             const user = document.getElementById('username').value.trim().toUpperCase();
             const pass = document.getElementById('password').value.trim().toUpperCase();
             const errorMsg = document.getElementById('errorMsg');
 
             if (user === 'SPASCAL' && pass === '1986ALEXANDRA') {
-                window.location.href = "https://www.polymobyl.com/qui-sommes-nous/"; 
+                changeScreen('screen-login', 'screen-countdown');
+                startTimer();
             } else {
                 errorMsg.style.display = 'block';
                 setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
@@ -156,54 +211,128 @@
         }
 
         // ==========================================
-        // 3. EFFET PLUIE MATRIX EN ARRIÈRE-PLAN
+        // LOGIQUE ÉCRAN 2 : COMPTE À REBOURS (5 SECONDES)
+        // ==========================================
+        let timerInterval;
+        let timeLeft = 5;
+
+        function startTimer() {
+            timeLeft = 5;
+            document.getElementById('countdown-display').innerText = timeLeft;
+            document.getElementById('age-input').value = '';
+            document.getElementById('age-input').focus();
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('countdown-display').innerText = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    triggerCountdownFailure();
+                }
+            }, 1000);
+        }
+
+        function checkAge() {
+            const ageAnswer = document.getElementById('age-input').value.trim();
+            
+            if (ageAnswer === '40') {
+                clearInterval(timerInterval);
+                changeScreen('screen-countdown', 'screen-admin');
+                // Lancer l'effet machine à écrire pour l'énigme admin
+                setTimeout(typeWriterAdmin, 500);
+            } else {
+                clearInterval(timerInterval);
+                triggerCountdownFailure();
+            }
+        }
+
+        // ==========================================
+        // EFFET MACHINE À ÉCRIRE ÉTAPE 3
+        // ==========================================
+        const adminHintText = "\"Je ne suis ni le bleu du ciel, ni le vert des parcs. Je suis un élément clé de Polymobyl. On me voit partout, jusqu'au logo. Sous une autre forme on peut me manger.\"";
+        let adminCharIndex = 0;
+
+        function typeWriterAdmin() {
+            const element = document.getElementById('admin-hint');
+            element.classList.add('cursor');
+            
+            if (adminCharIndex < adminHintText.length) {
+                element.innerHTML += adminHintText.charAt(adminCharIndex);
+                adminCharIndex++;
+                setTimeout(typeWriterAdmin, Math.random() * 40 + 20);
+            } else {
+                element.classList.remove('cursor');
+                // Affiche le champ de saisie une fois le texte terminé
+                document.getElementById('admin-login-section').style.display = 'block';
+                document.getElementById('admin-input').focus();
+            }
+        }
+
+        function triggerCountdownFailure() {
+            alert("TEMPS ÉCOULÉ OU ERREUR ! Retour à la case départ !");
+            // Réinitialisation complète de l'écran 1
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            changeScreen('screen-countdown', 'screen-login');
+        }
+
+        // ==========================================
+        // LOGIQUE ÉCRAN 3 & 4 : ADMIN & EXPLOSION
+        // ==========================================
+        function checkAdmin() {
+            const adminAnswer = document.getElementById('admin-input').value.trim().toUpperCase();
+            
+            if (adminAnswer === 'ORANGE') {
+                // VICTOIRE FINALE : Écran de félicitations au lieu de la redirection
+                changeScreen('screen-admin', 'screen-success');
+            } else {
+                // ÉCHEC : Écran d'explosion
+                changeScreen('screen-admin', 'screen-explosion');
+            }
+        }
+
+        // ==========================================
+        // RECOMMENCER LE JEU
+        // ==========================================
+        function restartGame() {
+            // Réinitialiser les champs de texte
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('age-input').value = '';
+            document.getElementById('admin-input').value = '';
+            
+            // Réinitialiser le texte de l'admin pour l'effet machine à écrire
+            document.getElementById('admin-hint').innerHTML = '';
+            adminCharIndex = 0;
+            document.getElementById('admin-login-section').style.display = 'none';
+
+            // Retour à l'écran 1
+            changeScreen('screen-success', 'screen-login');
+        }
+
+        // ==========================================
+        // ANIMATION FOND MATRIX (Inchangée)
         // ==========================================
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
-
-        // Ajuster la taille du canvas à l'écran
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-
-        // Initialisation des gouttes
-        for(let x = 0; x < columns; x++) {
-            drops[x] = 1;
-        }
+        const fontSize = 16; const columns = canvas.width / fontSize; const drops = [];
+        for(let x = 0; x < columns; x++) drops[x] = 1;
 
         function drawMatrix() {
-            // Fond noir avec opacité pour créer la traînée (fade effect)
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Couleur et police du texte Matrix
-            ctx.fillStyle = '#0F0';
-            ctx.font = fontSize + 'px monospace';
-
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0'; ctx.font = fontSize + 'px monospace';
             for(let i = 0; i < drops.length; i++) {
                 const text = letters.charAt(Math.floor(Math.random() * letters.length));
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                // Réinitialise la goutte en haut de façon aléatoire
-                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
         }
-        
-        // Rafraîchir l'animation Matrix toutes les 33 millisecondes
         setInterval(drawMatrix, 33);
-
-        // Ajustement si la fenêtre est redimensionnée
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
     </script>
 </body>
 </html>
