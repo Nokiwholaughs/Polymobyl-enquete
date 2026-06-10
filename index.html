@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERREUR 404 - SYSTEM COMPROMISED</title>
+    <title>TERMINAL D'ADMINISTRATION - POLYMOBYL</title>
     <style>
         body {
             background-color: #000;
@@ -19,6 +19,7 @@
             overflow: hidden;
         }
         
+        /* Fond Matrix */
         canvas {
             position: fixed;
             top: 0;
@@ -29,21 +30,16 @@
         .container {
             border: 2px solid #0f0;
             padding: 30px;
-            background-color: rgba(0, 0, 0, 0.85); 
+            background-color: rgba(0, 0, 0, 0.9); 
             box-shadow: 0 0 15px #0f0;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
             z-index: 1;
         }
 
-        .container.exploded {
-            border-color: red;
-            box-shadow: 0 0 25px red;
-            color: red;
-        }
+        h2 { color: #0f0; border-bottom: 1px dashed #0f0; padding-bottom: 10px; }
+        h1.alert { color: red; animation: blink 1s infinite; }
         
-        h1 { color: red; animation: blink 1s infinite; }
-        .boom-title { color: red; font-size: 2.5em; text-shadow: 0 0 10px red; }
         @keyframes blink { 50% { opacity: 0; } }
         
         input {
@@ -58,261 +54,293 @@
             text-align: center;
         }
         input:focus { outline: none; box-shadow: 0 0 10px #0f0; }
-        .exploded input { border-color: red; color: red; }
-        .exploded input:focus { box-shadow: 0 0 10px red; }
         
         button {
             background-color: #0f0;
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             cursor: pointer;
             font-family: inherit;
             font-weight: bold;
             margin-top: 15px;
             width: 100%;
+            transition: all 0.2s;
         }
         button:hover { background-color: #fff; box-shadow: 0 0 15px #fff;}
         
-        .btn-explosion {
-            background-color: red;
-            color: #fff;
-        }
-        .btn-explosion:hover { background-color: #fff; color: #000; box-shadow: 0 0 15px red; }
+        .error-msg { color: red; margin-top: 10px; display: none; font-weight: bold; }
 
-        .error-msg { color: red; margin-top: 15px; display: none; }
-        .hint { font-size: 0.9em; color: #aaa; margin: 5px 0; min-height: 1.2em; }
-        .cursor::after { content: '|'; animation: blink 1s infinite; }
-
-        .timer {
-            font-size: 4em;
-            color: red;
-            font-weight: bold;
-            margin: 20px 0;
-            text-shadow: 0 0 10px red;
+        /* Acte 1 : Logs */
+        .log-box {
+            height: 150px;
+            overflow-y: hidden;
+            text-align: left;
+            font-size: 0.85em;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 20px;
+            color: #aaa;
+            background: #050505;
         }
+        .log-error { color: red; font-weight: bold; }
+        .log-ok { color: #0f0; }
+
+        /* Acte 2 : Brassage */
+        .brassage-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            text-align: left;
+        }
+        .brassage-row label { font-weight: bold; width: 40%; }
+        .brassage-row input { width: 50%; margin: 0; }
+
+        /* Acte 3 : Allumage */
+        .sys-btn {
+            background-color: transparent;
+            color: #0f0;
+            border: 1px solid #0f0;
+            margin: 5px 0;
+        }
+        .sys-btn:hover { background-color: #0f0; color: #000; }
+        .sys-btn:disabled { border-color: #333; color: #333; cursor: not-allowed; background: transparent; box-shadow: none; }
+        .indicator-box {
+            font-size: 1.5em;
+            letter-spacing: 5px;
+            margin: 15px 0;
+            color: orange;
+        }
+
+        /* Scène Explosion */
+        .exploded { border-color: red; box-shadow: 0 0 25px red; color: red; }
+        .boom-title { font-size: 3em; text-shadow: 0 0 15px red; margin-bottom: 10px; }
+        .btn-red { background-color: red; color: #fff; }
+        .btn-red:hover { background-color: #fff; color: red; box-shadow: 0 0 15px red;}
+
+        /* Scène Succès */
+        .success-box { border-color: #fff; box-shadow: 0 0 25px #fff; color: #fff; }
+        .success-box h1 { color: #0f0; animation: none; text-shadow: 0 0 10px #0f0; }
     </style>
 </head>
 <body>
     <canvas id="matrix"></canvas>
 
-    <div class="container" id="screen-login">
-        <h1>⚠ ALERTE ROUGE ⚠</h1>
-        <p><strong>Serveur Polymobyl hors ligne.</strong></p>
+    <!-- ================= ACTE 1 : LES LOGS ================= -->
+    <div class="container" id="screen-logs">
+        <h1 class="alert">⚠ PANNE RÉSEAU GLOBALE ⚠</h1>
+        <h2>ANALYSE DES LOGS SYSTÈME</h2>
         
-        <div style="margin: 20px 0; border: 1px dashed #0f0; padding: 10px; text-align: left;">
-            <p class="hint" id="hint1"></p>
-            <p class="hint" id="hint2"></p>
-            <p class="hint" id="hint3"></p>
+        <div class="log-box" id="log-content">
+            <!-- Rempli par le JavaScript -->
         </div>
 
-        <div id="login-section" style="display: none;">
-            <h3>ACCÈS ADMINISTRATEUR</h3>
-            <input type="text" id="username" placeholder="Identifiant du pirate">
-            <input type="password" id="password" placeholder="Mot de passe">
-            <button onclick="checkLogin()">RESTAURER LE SYSTÈME</button>
-            <p class="error-msg" id="errorMsg">Accès refusé. Données corrompues.</p>
-        </div>
+        <p>Identifiez la source du plantage et isolez la machine.</p>
+        <input type="text" id="ip-input" placeholder="ENTREZ L'ADRESSE IP..." autocomplete="off">
+        <button onclick="checkIP()">FORCER LA CONNEXION</button>
+        <p class="error-msg" id="ip-error">Cible introuvable. Accès refusé.</p>
     </div>
 
-    <div class="container" id="screen-countdown" style="display: none;">
-        <h1 style="color: orange;">⚠ PROTOCOLE DE SÉCURITÉ ACCÉLÉRÉ ⚠</h1>
-        <p>Le pirate a lancé un script d'effacement final !</p>
-        <p><strong>Question : Quel âge a Polymobyl cette année ?</strong></p>
-        
-        <div class="timer" id="countdown-display">5</div>
+    <!-- ================= ACTE 2 : BAIE DE BRASSAGE ================= -->
+    <div class="container" id="screen-brassage" style="display: none;">
+        <h2>BAIE DE BRASSAGE VIRTUELLE</h2>
+        <p>Connexion établie (192.168.40.1). Rebranchez les serveurs aux bons départements pour déverrouiller la séquence.</p>
+        <p style="font-size: 0.8em; color: #aaa;">Saisissez : DESIGN, USINAGE, PEINTURE ou LOGISTIQUE</p>
 
-        <input type="number" id="age-input" placeholder="Entrez l'âge rapidement !" onkeyup="if(event.keyCode===13) checkAge()">
-        <button onclick="checkAge()">DÉSAMORCER</button>
+        <div class="brassage-row">
+            <label>SERVEUR 1 :</label>
+            <input type="text" id="s1" autocomplete="off" placeholder="Pôle...">
+        </div>
+        <div class="brassage-row">
+            <label>SERVEUR 2 :</label>
+            <input type="text" id="s2" autocomplete="off" placeholder="Pôle...">
+        </div>
+        <div class="brassage-row">
+            <label>SERVEUR 3 :</label>
+            <input type="text" id="s3" autocomplete="off" placeholder="Pôle...">
+        </div>
+        <div class="brassage-row">
+            <label>SERVEUR 4 :</label>
+            <input type="text" id="s4" autocomplete="off" placeholder="Pôle...">
+        </div>
+
+        <button onclick="checkBrassage()">APPLIQUER LE ROUTAGE</button>
+        <p class="error-msg" id="brassage-error">Erreur de routage. Pôles incorrects.</p>
     </div>
 
-    <!-- ================= SCÈNE 3 : INTERFACE ADMIN (SERVEURS) ================= -->
-    <div class="container" id="screen-admin" style="display: none;">
-        <h1 style="color: #0f0; animation: none;">💻 INTERFACE DE MAINTENANCE v4.0</h1>
-        <p style="color: #0f0;"><strong>STATUT : SERVEURS HORS LIGNE</strong></p>
-        <p>Pour relancer le serveur central de signalétique, confirmez la clé d'identification de l'entreprise.</p>
+    <!-- ================= ACTE 3 : SÉQUENCE D'ALLUMAGE ================= -->
+    <div class="container" id="screen-allumage" style="display: none;">
+        <h2>REDÉMARRAGE À FROID</h2>
+        <p>Routage OK. Suivez strictement la <strong style="color:red;">Procédure Alpha</strong> pour allumer les modules.</p>
         
-        <div style="margin: 20px 0; border: 1px dashed #0f0; padding: 15px; text-align: left; color: #aaa;">
-            <p><em id="admin-hint" class="hint"></em></p>
-        </div>
+        <div class="indicator-box" id="sequence-display">- - - - -</div>
 
-        <!-- Section cachée pendant l'écriture -->
-        <div id="admin-login-section" style="display: none;">
-            <input type="text" id="admin-input" placeholder="Entrez la clé d'identification" onkeyup="if(event.keyCode===13) checkAdmin()">
-            <button onclick="checkAdmin()">RÉPARER LES SERVEURS</button>
-        </div>
+        <button class="sys-btn" id="btn-VENTILATION" onclick="pressBtn('VENTILATION')">1. VENTILATION</button>
+        <button class="sys-btn" id="btn-ALIMENTATION" onclick="pressBtn('ALIMENTATION')">2. ALIMENTATION</button>
+        <button class="sys-btn" id="btn-BDD" onclick="pressBtn('BDD')">3. BASE DE DONNÉES</button>
+        <button class="sys-btn" id="btn-RESEAU" onclick="pressBtn('RESEAU')">4. RÉSEAU EXTÉRIEUR</button>
+        <button class="sys-btn" id="btn-INTERFACE" onclick="pressBtn('INTERFACE')">5. INTERFACE UTILISATEUR</button>
     </div>
 
     <!-- ================= SCÈNE 4 : EXPLOSION ================= -->
     <div class="container exploded" id="screen-explosion" style="display: none;">
-        <div class="boom-title">💥 BOOM ! 💥</div>
-        <h2>LE SERVEUR A EXPLOSÉ</h2>
-        <p>Le système a détecté une surchauffe critique suite à votre mauvaise réponse.</p>
-        <button class="btn-explosion" onclick="retryAdmin()">RÉESSAYER LA RÉPARATION</button>
+        <div class="boom-title">💥 SURCHAUFFE 💥</div>
+        <h2>ERREUR DE SÉQUENCE</h2>
+        <p>Vous n'avez pas respecté l'ordre de la procédure d'urgence. Le système s'est mis en sécurité.</p>
+        <button class="btn-red" onclick="retryAllumage()">RÉINITIALISER LA SÉQUENCE</button>
     </div>
 
     <!-- ================= SCÈNE 5 : SUCCÈS ================= -->
-    <div class="container" id="screen-success" style="display: none; border-color: #fff; box-shadow: 0 0 25px #fff; color: #fff;">
-        <h1 style="color: #0f0; text-shadow: 0 0 10px #0f0; animation: none;">✅ FÉLICITATIONS ! ✅</h1>
-        <p><strong>Système entièrement restauré.</strong></p>
-        <p>La base de données de Polymobyl est sauvée. Merci pour votre intervention rapide !</p>
+    <div class="container success-box" id="screen-success" style="display: none;">
+        <h1>✅ ACCÈS RÉTABLI ✅</h1>
+        <p><strong>Félicitations, techniciens !</strong></p>
+        <p>Tous les serveurs de Polymobyl sont de nouveau opérationnels.</p>
         <button style="background-color: #fff; color: #000;" onclick="window.location.href='https://www.polymobyl.com/qui-sommes-nous/'">ACCÉDER AU SITE</button>
-        <button style="background-color: #333; color: #fff; margin-top: 10px;" onclick="restartGame()">RECOMMENCER LE JEU</button>
+        <button style="background-color: #333; color: #fff; margin-top: 10px;" onclick="restartGame()">RECOMMENCER L'ENQUÊTE</button>
     </div>
 
     <script>
-        // Gestion globale des écrans
+        // ==========================================
+        // GESTION DES ÉCRANS
+        // ==========================================
         function changeScreen(currentId, nextId) {
             document.getElementById(currentId).style.display = 'none';
             document.getElementById(nextId).style.display = 'block';
         }
 
         // ==========================================
-        // LOGIQUE ÉCRAN 1 : CONNEXION
+        // ACTE 1 : ANIMATION ET LOGIQUE DES LOGS
         // ==========================================
-        const hints = [
-            "\"Mon nom est celui qui régit actuellement...avec la première lettre de mon prénom au début\"",
-            "\"J'adore l'année où l'entreprise s'est créée...\"",
-            "\"...et ma femme a inspiré ma sécurité.\""
+        const logs = [
+            "Initialisation du système...",
+            "<span class='log-ok'>[OK] - Serveur Bureau d'études : Sauvegarde des plans de signalétique.</span>",
+            "Vérification des protocoles de sécurité...",
+            "<span class='log-ok'>[OK] - Découpe Laser : Fin de cycle sur la tôle aluminium.</span>",
+            "<span class='log-ok'>[OK] - Thermolaquage : Température des fours stable à 180°C.</span>",
+            "Mise à jour des tables de routage...",
+            "<span class='log-error'>[ERREUR CRITIQUE] - Intégration non autorisée sur le serveur principal.</span>",
+            "<span class='log-error'>[PANNE] - Déconnexion forcée du sous-réseau.</span>",
+            "En attente d'intervention manuelle..."
         ];
-        let currentHint = 0; let currentChar = 0;
-        
-        function typeWriter() {
-            if (currentHint < hints.length) {
-                const element = document.getElementById('hint' + (currentHint + 1));
-                element.classList.add('cursor');
-                if (currentChar < hints[currentHint].length) {
-                    element.innerHTML += hints[currentHint].charAt(currentChar);
-                    currentChar++;
-                    setTimeout(typeWriter, Math.random() * 40 + 20); 
-                } else {
-                    element.classList.remove('cursor');
-                    currentHint++; currentChar = 0;
-                    setTimeout(typeWriter, 400);
-                }
-            } else {
-                document.getElementById('login-section').style.display = 'block';
+
+        let logIndex = 0;
+        function showLogs() {
+            if (logIndex < logs.length) {
+                const logBox = document.getElementById('log-content');
+                logBox.innerHTML += logs[logIndex] + "<br>";
+                logBox.scrollTop = logBox.scrollHeight; // Auto-scroll
+                logIndex++;
+                setTimeout(showLogs, Math.random() * 600 + 200);
             }
         }
-        setTimeout(typeWriter, 1000);
+        setTimeout(showLogs, 500);
 
-        function checkLogin() {
-            const user = document.getElementById('username').value.trim().toUpperCase();
-            const pass = document.getElementById('password').value.trim().toUpperCase();
-            const errorMsg = document.getElementById('errorMsg');
-
-            if (user === 'SPASCAL' && pass === '1986ALEXANDRA') {
-                changeScreen('screen-login', 'screen-countdown');
-                startTimer();
+        function checkIP() {
+            const ip = document.getElementById('ip-input').value.trim();
+            if (ip === '192.168.40.1') {
+                changeScreen('screen-logs', 'screen-brassage');
             } else {
-                errorMsg.style.display = 'block';
-                setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
+                const err = document.getElementById('ip-error');
+                err.style.display = 'block';
+                setTimeout(() => err.style.display = 'none', 3000);
             }
         }
 
         // ==========================================
-        // LOGIQUE ÉCRAN 2 : COMPTE À REBOURS (5 SECONDES)
+        // ACTE 2 : LOGIQUE DE LA BAIE DE BRASSAGE
         // ==========================================
-        let timerInterval;
-        let timeLeft = 5;
+        function checkBrassage() {
+            const s1 = document.getElementById('s1').value.trim().toUpperCase();
+            const s2 = document.getElementById('s2').value.trim().toUpperCase();
+            const s3 = document.getElementById('s3').value.trim().toUpperCase();
+            const s4 = document.getElementById('s4').value.trim().toUpperCase();
 
-        function startTimer() {
-            timeLeft = 5;
-            document.getElementById('countdown-display').innerText = timeLeft;
-            document.getElementById('age-input').value = '';
-            document.getElementById('age-input').focus();
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('countdown-display').innerText = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    triggerCountdownFailure();
-                }
-            }, 1000);
+            // Réponses attendues d'après les notes de service
+            if (s1 === 'DESIGN' && s2 === 'USINAGE' && s3 === 'PEINTURE' && s4 === 'LOGISTIQUE') {
+                changeScreen('screen-brassage', 'screen-allumage');
+            } else {
+                const err = document.getElementById('brassage-error');
+                err.style.display = 'block';
+                setTimeout(() => err.style.display = 'none', 3000);
+            }
         }
 
-        function checkAge() {
-            const ageAnswer = document.getElementById('age-input').value.trim();
+        // ==========================================
+        // ACTE 3 : LOGIQUE SÉQUENCE D'ALLUMAGE
+        // ==========================================
+        const expectedSequence = ['VENTILATION', 'ALIMENTATION', 'BDD', 'RESEAU', 'INTERFACE'];
+        let currentSequence = [];
+
+        function pressBtn(sysName) {
+            currentSequence.push(sysName);
             
-            if (ageAnswer === '40') {
-                clearInterval(timerInterval);
-                changeScreen('screen-countdown', 'screen-admin');
-                // Lancer l'effet machine à écrire pour l'énigme admin
-                setTimeout(typeWriterAdmin, 500);
-            } else {
-                clearInterval(timerInterval);
-                triggerCountdownFailure();
+            // Désactiver le bouton cliqué pour éviter les doubles clics
+            document.getElementById('btn-' + sysName).disabled = true;
+            document.getElementById('btn-' + sysName).style.color = 'orange';
+
+            // Mettre à jour l'affichage visuel (- - - - -)
+            let displayStr = "";
+            for(let i=0; i<5; i++) {
+                displayStr += (i < currentSequence.length) ? "O " : "- ";
+            }
+            document.getElementById('sequence-display').innerText = displayStr.trim();
+
+            // Vérifier si le clic actuel correspond au bon ordre
+            const currentIndex = currentSequence.length - 1;
+            if (currentSequence[currentIndex] !== expectedSequence[currentIndex]) {
+                // Mauvais bouton -> BOOM
+                setTimeout(() => {
+                    changeScreen('screen-allumage', 'screen-explosion');
+                }, 300);
+            } else if (currentSequence.length === 5) {
+                // Tout est bon et complet -> SUCCÈS
+                setTimeout(() => {
+                    changeScreen('screen-allumage', 'screen-success');
+                }, 500);
             }
         }
 
-        // ==========================================
-        // EFFET MACHINE À ÉCRIRE ÉTAPE 3
-        // ==========================================
-        const adminHintText = "\"Je ne suis ni le bleu du ciel, ni le vert des parcs. Je suis un élément clé de Polymobyl. On me voit partout, jusqu'au logo. Sous une autre forme on peut me manger.\"";
-        let adminCharIndex = 0;
-
-        function typeWriterAdmin() {
-            const element = document.getElementById('admin-hint');
-            element.classList.add('cursor');
+        function retryAllumage() {
+            // Réinitialiser la séquence
+            currentSequence = [];
+            document.getElementById('sequence-display').innerText = "- - - - -";
             
-            if (adminCharIndex < adminHintText.length) {
-                element.innerHTML += adminHintText.charAt(adminCharIndex);
-                adminCharIndex++;
-                setTimeout(typeWriterAdmin, Math.random() * 40 + 20);
-            } else {
-                element.classList.remove('cursor');
-                // Affiche le champ de saisie une fois le texte terminé
-                document.getElementById('admin-login-section').style.display = 'block';
-                document.getElementById('admin-input').focus();
-            }
-        }
+            // Réactiver tous les boutons
+            const btns = ['VENTILATION', 'ALIMENTATION', 'BDD', 'RESEAU', 'INTERFACE'];
+            btns.forEach(btn => {
+                const b = document.getElementById('btn-' + btn);
+                b.disabled = false;
+                b.style.color = '#0f0';
+            });
 
-        function triggerCountdownFailure() {
-            alert("TEMPS ÉCOULÉ OU ERREUR ! Retour à la case départ !");
-            // Réinitialisation complète de l'écran 1
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            changeScreen('screen-countdown', 'screen-login');
+            changeScreen('screen-explosion', 'screen-allumage');
         }
 
         // ==========================================
-        // LOGIQUE ÉCRAN 3 & 4 : ADMIN & EXPLOSION
-        // ==========================================
-        function checkAdmin() {
-            const adminAnswer = document.getElementById('admin-input').value.trim().toUpperCase();
-            
-            if (adminAnswer === 'ORANGE') {
-                // VICTOIRE FINALE : Écran de félicitations au lieu de la redirection
-                changeScreen('screen-admin', 'screen-success');
-            } else {
-                // ÉCHEC : Écran d'explosion
-                changeScreen('screen-admin', 'screen-explosion');
-            }
-        }
-
-        // ==========================================
-        // RECOMMENCER LE JEU
+        // RECOMMENCER LE JEU GLOBAL
         // ==========================================
         function restartGame() {
-            // Réinitialiser les champs de texte
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('age-input').value = '';
-            document.getElementById('admin-input').value = '';
+            // Vider les champs
+            document.getElementById('ip-input').value = '';
+            document.getElementById('s1').value = '';
+            document.getElementById('s2').value = '';
+            document.getElementById('s3').value = '';
+            document.getElementById('s4').value = '';
             
-            // Réinitialiser le texte de l'admin pour l'effet machine à écrire
-            document.getElementById('admin-hint').innerHTML = '';
-            adminCharIndex = 0;
-            document.getElementById('admin-login-section').style.display = 'none';
-
-            // Retour à l'écran 1
-            changeScreen('screen-success', 'screen-login');
+            // Reset logs
+            document.getElementById('log-content').innerHTML = '';
+            logIndex = 0;
+            
+            retryAllumage(); // Réinitialise l'acte 3 en fond
+            changeScreen('screen-allumage', 'screen-logs'); // Retour à l'acte 1
+            changeScreen('screen-success', 'screen-logs'); // Au cas où
+            
+            setTimeout(showLogs, 500);
         }
 
         // ==========================================
-        // ANIMATION FOND MATRIX (Inchangée)
+        // ANIMATION FOND MATRIX
         // ==========================================
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
