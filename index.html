@@ -49,8 +49,8 @@
             font-size: 15vw; /* Taille géante réactive */
             font-weight: bold;
             color: var(--main-color);
-            opacity: 0.15; /* Transparent pour ne pas gêner la lecture */
-            z-index: -2;
+            opacity: 0.3; /* On le rend un peu plus visible */
+            z-index: 0; /* LA CORRECTION EST ICI : Devant la matrice (-2), derrière la boîte (1) */
             margin: 0;
             pointer-events: none;
             transition: all 1s ease;
