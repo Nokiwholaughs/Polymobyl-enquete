@@ -40,22 +40,21 @@
             background-color: transparent; 
         }
 
-        /* Style de l'image en fond */
-        #bg-image {
+        /* Style du visage du Hacker */
+        #hacker-face {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover; /* L'image s'adapte à tout l'écran sans se déformer */
-            z-index: -3; /* Derrière tout le reste */
-            opacity: 0; /* Invisible au début */
-            transition: opacity 2s ease-in-out; /* Fondu d'apparition de 2 secondes */
-        }
-
-        /* L'image devient 100% visible quand le thème stable (victoire) est activé */
-        body.theme-stable #bg-image {
-            opacity: 1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15vw; /* Taille géante réactive */
+            font-weight: bold;
+            color: var(--main-color);
+            opacity: 0.15; /* Transparent pour ne pas gêner la lecture */
+            z-index: -2;
+            margin: 0;
+            pointer-events: none;
+            transition: all 1s ease;
+            text-align: center;
         }
 
         /* ================= STYLES GLOBAUX ================= */
@@ -155,7 +154,7 @@
     </style>
 </head>
 <body>
-    <img id="bg-image" src="fond-site.jpg" alt="Fond Polymobyl">
+    <pre id="hacker-face"></pre>
     
     <div class="scanlines"></div>
     <canvas id="matrix"></canvas>
@@ -250,6 +249,21 @@
             if (mColor) matrixColor = mColor;
             if (mSpeed) matrixSpeed = mSpeed;
         }
+
+        // ================= VISAGE DU HACKER =================
+        const faces = [
+            "\n [0]   [0]\n    > <   \n \\_______/", // 0. Moqueur (Début)
+            "\n [o]   [o]\n    > <   \n  ------- ",  // 1. Moins sûr (Étape 2)
+            "\n [.]   [.]\n    > <   \n   /   \\  ",  // 2. Inquiet (Étape 3)
+            "\n [x]   [x]\n    > <   \n  /¯¯¯¯¯\\ "   // 3. Vaincu (Victoire)
+        ];
+
+        function setFace(level) {
+            document.getElementById('hacker-face').innerText = faces[level];
+        }
+        
+        // Initialisation du visage au chargement de la page
+        setFace(0);
 
         // ================= SCÈNE 1 : CONNEXION =================
         const hints = [
