@@ -40,21 +40,41 @@
             background-color: transparent; 
         }
 
-        /* Style du visage du Hacker */
+       /* ================= VISAGE DU HACKER ================= */
         #hacker-face {
             position: fixed;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 15vw; /* Taille géante réactive */
+            left: 0;
+            width: 100%; /* Prend toute la largeur pour garantir le centrage */
+            transform: translateY(-50%);
+            font-family: monospace;
+            font-size: 3vw; /* Taille adaptable */
+            line-height: 0.9; /* Écrase les lignes pour former un visage compact */
             font-weight: bold;
             color: var(--main-color);
-            opacity: 0.3; /* On le rend un peu plus visible */
-            z-index: 0; /* LA CORRECTION EST ICI : Devant la matrice (-2), derrière la boîte (1) */
+            z-index: 0;
             margin: 0;
+            padding: 0;
             pointer-events: none;
-            transition: all 1s ease;
-            text-align: center;
+            white-space: pre; 
+            text-align: center; /* Centrage horizontal absolu */
+            text-shadow: 0 0 20px #000;
+            /* Les animations qui le rendent terrifiant */
+            animation: creep-breath 4s infinite alternate, creep-glitch 0.1s infinite;
+        }
+
+        /* Respiration lente et inquiétante dans l'ombre */
+        @keyframes creep-breath {
+            0% { transform: translateY(-50%) scale(1); opacity: 0.15; filter: blur(1px); }
+            100% { transform: translateY(-50%) scale(1.05); opacity: 0.4; filter: blur(0px); }
+        }
+
+        /* Tremblement erratique de virus */
+        @keyframes creep-glitch {
+            0% { margin-left: 0; }
+            33% { margin-left: 4px; margin-top: -2px; }
+            66% { margin-left: -4px; margin-top: 2px; }
+            100% { margin-left: 0; }
         }
 
         /* ================= STYLES GLOBAUX ================= */
@@ -250,12 +270,59 @@
             if (mSpeed) matrixSpeed = mSpeed;
         }
 
-        // ================= VISAGE DU HACKER =================
+      // ================= VISAGE DU HACKER =================
         const faces = [
-            "\n [0]   [0]\n    > <   \n \\_______/", // 0. Moqueur (Début)
-            "\n [o]   [o]\n    > <   \n  ------- ",  // 1. Moins sûr (Étape 2)
-            "\n [.]   [.]\n    > <   \n   /   \\  ",  // 2. Inquiet (Étape 3)
-            "\n [x]   [x]\n    > <   \n  /¯¯¯¯¯\\ "   // 3. Vaincu (Victoire)
+            // 0. Terrifiant & Souriant (Début du jeu)
+            "       .▄████████████▄.       \n" +
+            "     .██████████████████.     \n" +
+            "    .████████████████████.    \n" +
+            "    ████▀▀▀▀██████▀▀▀▀████    \n" +
+            "    ████      ██      ████    \n" +
+            "    ████▄▄▄▄██████▄▄▄▄████    \n" +
+            "    '████████████████████'    \n" +
+            "     '██████▄▄▄▄▄▄██████'     \n" +
+            "      '████▓▓▓▓▓▓▓▓████'      \n" +
+            "        '██▓▓▓▓▓▓▓▓██'        \n" +
+            "          '▀██████▀'          ",
+
+            // 1. Inquiet (Étape 2) - Le grand sourire à pleines dents se referme
+            "       .▄████████████▄.       \n" +
+            "     .██████████████████.     \n" +
+            "    .████████████████████.    \n" +
+            "    ████▀▀▀▀██████▀▀▀▀████    \n" +
+            "    ████      ██      ████    \n" +
+            "    ████▄▄▄▄██████▄▄▄▄████    \n" +
+            "    '████████████████████'    \n" +
+            "     '██████████████████'     \n" +
+            "      '████████████████'      \n" +
+            "        '████████████'        \n" +
+            "          '▀██████▀'          ",
+
+            // 2. Choqué (Étape 3) - Les yeux s'ouvrent en grand, la bouche tombe
+            "       .▄████████████▄.       \n" +
+            "     .██████████████████.     \n" +
+            "    .████████████████████.    \n" +
+            "    ████▀▀▀▀██████▀▀▀▀████    \n" +
+            "    ███        ██        ███  \n" +
+            "    ████▄▄▄▄██████▄▄▄▄████    \n" +
+            "    '████████████████████'    \n" +
+            "     '██████████████████'     \n" +
+            "      '█████      █████'      \n" +
+            "        '███      ███'        \n" +
+            "          '▀██████▀'          ",
+
+            // 3. Vaincu (Victoire) - Visage mort, les lumières s'éteignent
+            "       .▄████████████▄.       \n" +
+            "     .██████████████████.     \n" +
+            "    .████████████████████.    \n" +
+            "    ██████████████████████    \n" +
+            "    ██████████████████████    \n" +
+            "    ██████████████████████    \n" +
+            "    '████████████████████'    \n" +
+            "     '██████████████████'     \n" +
+            "      '████████████████'      \n" +
+            "        '████████████'        \n" +
+            "          '▀██████▀'          "
         ];
 
         function setFace(level) {
