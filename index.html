@@ -29,14 +29,33 @@
             --font-family: 'Arial', sans-serif; /* Police plus propre */
         }
 
-        /* Thème 4 : Polymobyl (Marron & Épuré) */
+        /* Thème 4 : Polymobyl (Orange & Épuré) */
         body.theme-stable {
-            --main-color: #5A3A22; /* Le vrai Marron Polymobyl */
-            --bg-color: rgba(255, 255, 255, 0.95); /* Fond clair et propre */
+            --main-color: #FF6600; /* Le vrai Orange Polymobyl */
+            --bg-color: rgba(255, 255, 255, 0.85); /* Semi-transparent pour voir le site au travers */
             --border-style: none;
             --box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #333;
+            background-color: transparent; /* Rend le fond noir transparent */
+        }
+
+        /* AJOUT : Style de l'iframe en fond */
+        #bg-iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            z-index: -3; /* Derrière tout le reste */
+            opacity: 0; /* Invisible au début */
+            transition: opacity 2s ease-in-out; /* Fondu d'apparition de 2 secondes */
+        }
+
+        /* L'iframe devient 100% visible quand le thème stable (victoire) est activé */
+        body.theme-stable #bg-iframe {
+            opacity: 1;
         }
 
         /* ================= STYLES GLOBAUX ================= */
@@ -136,6 +155,8 @@
     </style>
 </head>
 <body>
+    <iframe id="bg-iframe" src="https://www.polymobyl.com"></iframe>
+    
     <div class="scanlines"></div>
     <canvas id="matrix"></canvas>
 
