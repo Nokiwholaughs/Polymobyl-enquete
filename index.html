@@ -3,84 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERREUR 404 - SYSTEM COMPROMISED</title>
+    <title>RESTAURATION SYSTÈME - POLYMOBYL</title>
     <style>
+        /* ================= VARIABLES DYNAMIQUES ================= */
+        :root {
+            --main-color: #0f0;
+            --bg-color: rgba(0, 0, 0, 0.85);
+            --border-style: 2px solid var(--main-color);
+            --box-shadow: 0 0 15px var(--main-color);
+            --font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Thème 2 : Diagnostic (Orange) */
+        body.theme-diag {
+            --main-color: #ff9d00;
+            --border-style: 1px dashed var(--main-color);
+            --box-shadow: 0 0 10px var(--main-color);
+        }
+
+        /* Thème 3 : Réparation (Cyan) */
+        body.theme-repair {
+            --main-color: #00f0ff;
+            --border-style: 1px solid var(--main-color);
+            --box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            --font-family: 'Arial', sans-serif; /* Police plus propre */
+        }
+
+        /* Thème 4 : Polymobyl (Marron & Épuré) */
+        body.theme-stable {
+            --main-color: #5A3A22; /* Le vrai Marron Polymobyl */
+            --bg-color: rgba(255, 255, 255, 0.95); /* Fond clair et propre */
+            --border-style: none;
+            --box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+
+        /* ================= STYLES GLOBAUX ================= */
         body {
             background-color: #000;
-            color: #0f0;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-            overflow: hidden;
+            color: var(--main-color);
+            font-family: var(--font-family);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; margin: 0; text-align: center; overflow: hidden;
+            transition: all 1s ease; /* Transition douce entre les thèmes */
         }
         
-        canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+        canvas { position: fixed; top: 0; left: 0; z-index: -2; transition: opacity 2s; }
+
+        /* Effet Scanlines (Lignes d'écran cathodique) */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            z-index: -1; pointer-events: none;
+        }
 
         .container {
-            border: 2px solid #0f0;
-            padding: 30px;
-            background-color: rgba(0, 0, 0, 0.85); 
-            box-shadow: 0 0 15px #0f0;
-            max-width: 550px;
-            width: 90%;
-            z-index: 1;
+            border: var(--border-style);
+            padding: 40px;
+            background-color: var(--bg-color); 
+            box-shadow: var(--box-shadow);
+            max-width: 550px; width: 90%; z-index: 1;
+            transition: all 1s ease;
+            backdrop-filter: blur(5px);
+            border-radius: 5px;
         }
-        
-        h1 { color: red; animation: blink 1s infinite; }
-        h2 { color: #0f0; border-bottom: 1px dashed #0f0; padding-bottom: 10px; margin-top: 0;}
-        @keyframes blink { 50% { opacity: 0; } }
-        
-        input {
-            background-color: #000; color: #0f0; border: 1px solid #0f0;
-            padding: 10px; margin: 10px 0; width: calc(100% - 22px);
-            font-family: inherit; text-transform: uppercase; text-align: center;
-        }
-        input:focus { outline: none; box-shadow: 0 0 10px #0f0; }
-        
-        button {
-            background-color: #0f0; color: #000; border: none; padding: 10px 20px;
-            cursor: pointer; font-family: inherit; font-weight: bold; margin-top: 15px; width: 100%;
-        }
-        button:hover { background-color: #fff; box-shadow: 0 0 15px #fff;}
-        
-        .error-msg { color: red; margin-top: 15px; display: none; }
-        .hint { font-size: 0.9em; color: #aaa; margin: 5px 0; min-height: 1.2em; text-align: left; }
-        .cursor::after { content: '|'; animation: blink 1s infinite; }
 
-        /* Styles Spécifiques aux Serveurs */
-        .log-box { height: 150px; overflow-y: hidden; text-align: left; font-size: 0.85em; border: 1px solid #333; padding: 10px; margin-bottom: 20px; color: #aaa; background: #050505; }
-        .log-error { color: red; font-weight: bold; }
-        .log-ok { color: #0f0; }
+        body.theme-stable .container { border-radius: 15px; border-top: 5px solid var(--main-color); }
+        
+        /* Titres & Textes */
+        h1 { color: red; }
+        body.theme-diag h1 { color: var(--main-color); font-size: 1.8em; }
+        body.theme-repair h1 { color: var(--main-color); font-size: 1.8em; letter-spacing: 2px;}
+        body.theme-stable h1 { color: var(--main-color); font-weight: 300; letter-spacing: 1px;}
+        
+        h2 { color: var(--main-color); border-bottom: 1px solid var(--main-color); padding-bottom: 10px; margin-top: 0; transition: color 1s; }
+        body.theme-stable h2 { color: #333; border-bottom: 2px solid var(--main-color); }
+
+        /* Effet Glitch (Uniquement au début) */
+        .glitch { animation: glitch-skew 1s infinite linear alternate-reverse; position: relative; }
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); } 20% { transform: skew(-10deg); }
+            40% { transform: skew(10deg); } 60% { transform: skew(0deg); }
+            80% { transform: skew(5deg); } 100% { transform: skew(0deg); }
+        }
+
+        /* Formulaires & Boutons */
+        input {
+            background-color: transparent; color: var(--main-color); border: 1px solid var(--main-color);
+            padding: 12px; margin: 10px 0; width: calc(100% - 26px);
+            font-family: inherit; text-transform: uppercase; text-align: center;
+            transition: all 0.5s;
+        }
+        input:focus { outline: none; box-shadow: 0 0 10px var(--main-color); background: rgba(255,255,255,0.05); }
+        
+        body.theme-stable input { color: #333; border: 1px solid #ccc; background: #fff; }
+        body.theme-stable input:focus { border-color: var(--main-color); box-shadow: none; }
+
+        button {
+            background-color: var(--main-color); color: #000; border: none; padding: 12px 20px;
+            cursor: pointer; font-family: inherit; font-weight: bold; margin-top: 15px; width: 100%;
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
+        }
+        button:hover { background-color: #fff; box-shadow: 0 0 15px #fff; transform: translateY(-2px); }
+        
+        body.theme-stable button { color: #fff; border-radius: 5px; }
+        body.theme-stable button:hover { background-color: #3e2716; box-shadow: 0 5px 15px rgba(90, 58, 34, 0.3); }
+
+        .hint { font-size: 0.9em; color: #aaa; margin: 5px 0; min-height: 1.2em; text-align: left; }
+        body.theme-stable .hint { color: #666; }
+        .cursor::after { content: '█'; animation: blink 1s infinite; margin-left: 5px;}
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Spécifique aux étapes */
+        .log-box { height: 150px; overflow-y: hidden; text-align: left; font-size: 0.85em; border: 1px solid var(--main-color); padding: 15px; margin-bottom: 20px; color: #ccc; background: rgba(0,0,0,0.5); }
         .brassage-row { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; text-align: left; }
         .brassage-row label { font-weight: bold; width: 40%; font-size: 0.9em; }
         .brassage-row input { width: 50%; margin: 0; }
-        .sys-btn { background-color: transparent; color: #0f0; border: 1px solid #0f0; margin: 5px 0; }
-        .sys-btn:hover { background-color: #0f0; color: #000; }
-        .sys-btn:disabled { border-color: #333; color: #333; cursor: not-allowed; background: transparent; box-shadow: none; }
-        .indicator-box { font-size: 1.5em; letter-spacing: 5px; margin: 15px 0; color: orange; }
+        
+        .sys-btn { background-color: transparent; color: var(--main-color); border: 1px solid var(--main-color); margin: 5px 0; }
+        .sys-btn:hover { background-color: var(--main-color); color: #000; }
+        .sys-btn:disabled { border-color: #555; color: #555; cursor: not-allowed; background: transparent; transform: none; box-shadow: none;}
+        body.theme-stable .sys-btn { border: 1px solid #ccc; color: #666; }
+        body.theme-stable .sys-btn:hover { border-color: var(--main-color); background: transparent; color: var(--main-color); }
 
-        /* Scènes Explosion & Succès */
-        .exploded { border-color: red; box-shadow: 0 0 25px red; color: red; }
-        .boom-title { font-size: 2.5em; text-shadow: 0 0 10px red; margin-bottom: 10px; }
-        .btn-explosion { background-color: red; color: #fff; }
-        .btn-explosion:hover { background-color: #fff; color: #000; box-shadow: 0 0 15px red; }
-        .success-box { border-color: #fff; box-shadow: 0 0 25px #fff; color: #fff; }
-        .success-box h1 { color: #0f0; animation: none; text-shadow: 0 0 10px #0f0; }
+        .indicator-box { font-size: 1.5em; letter-spacing: 5px; margin: 15px 0; color: var(--main-color); }
+        
+        .exploded { border-color: red !important; box-shadow: 0 0 30px red !important; color: red !important; animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .error-msg { color: red; margin-top: 15px; display: none; font-weight: bold;}
     </style>
 </head>
 <body>
+    <div class="scanlines"></div>
     <canvas id="matrix"></canvas>
 
     <div class="container" id="screen-login">
-        <h1>⚠ ALERTE ROUGE ⚠</h1>
+        <h1 class="glitch">⚠ SYSTEM COMPROMISED ⚠</h1>
         <p><strong>Serveur Polymobyl hors ligne.</strong></p>
         
-        <div style="margin: 20px 0; border: 1px dashed #0f0; padding: 10px;">
+        <div style="margin: 20px 0; border-left: 3px solid var(--main-color); padding-left: 15px;">
             <p class="hint" id="hint1"></p>
             <p class="hint" id="hint2"></p>
             <p class="hint" id="hint3"></p>
@@ -88,41 +151,43 @@
 
         <div id="login-section" style="display: none;">
             <h3>ACCÈS ADMINISTRATEUR</h3>
-            <input type="text" id="username" placeholder="Identifiant du pirate">
+            <input type="text" id="username" placeholder="Identifiant">
             <input type="password" id="password" placeholder="Mot de passe">
             <button onclick="checkLogin()">RESTAURER LE SYSTÈME</button>
-            <p class="error-msg" id="errorMsg">Accès refusé. Données corrompues.</p>
+            <p class="error-msg" id="errorMsg">Accès refusé.</p>
         </div>
     </div>
 
     <div class="container" id="screen-logs" style="display: none;">
-        <h1>⚠ PANNE RÉSEAU GLOBALE ⚠</h1>
-        <h2>ANALYSE DES LOGS SYSTÈME</h2>
+        <h1>DIAGNOSTIC EN COURS</h1>
+        <h2>ANALYSE DES LOGS</h2>
         
         <div class="log-box" id="log-content"></div>
 
         <p style="font-size: 0.9em;">Identifiez la source du plantage et isolez la machine.</p>
-        <input type="text" id="ip-input" placeholder="ENTREZ L'ADRESSE IP..." autocomplete="off">
-        <button onclick="checkIP()">FORCER LA CONNEXION</button>
-        <p class="error-msg" id="ip-error">Cible introuvable. Accès refusé.</p>
+        <input type="text" id="ip-input" placeholder="IP CIBLE..." autocomplete="off">
+        <button onclick="checkIP()">ISOLER LA CIBLE</button>
+        <p class="error-msg" id="ip-error">IP Introuvable.</p>
     </div>
 
     <div class="container" id="screen-brassage" style="display: none;">
-        <h2>BAIE DE BRASSAGE VIRTUELLE</h2>
-        <p style="font-size: 0.9em;">Connexion établie (192.168.40.1). Rebranchez les serveurs aux bons départements pour déverrouiller la séquence.</p>
+        <h1>CONNEXION SÉCURISÉE</h1>
+        <h2>ROUTAGE DES SERVEURS</h2>
+        <p style="font-size: 0.9em;">Connexion (192.168.40.1) établie. Rétablissez les flux vers les ateliers.</p>
 
-        <div class="brassage-row"><label>SERVEUR 1 :</label><input type="text" id="s1" autocomplete="off" placeholder="Pôle..."></div>
-        <div class="brassage-row"><label>SERVEUR 2 :</label><input type="text" id="s2" autocomplete="off" placeholder="Pôle..."></div>
-        <div class="brassage-row"><label>SERVEUR 3 :</label><input type="text" id="s3" autocomplete="off" placeholder="Pôle..."></div>
-        <div class="brassage-row"><label>SERVEUR 4 :</label><input type="text" id="s4" autocomplete="off" placeholder="Pôle..."></div>
+        <div class="brassage-row"><label>SERVEUR 1 :</label><input type="text" id="s1" autocomplete="off" placeholder="Département..."></div>
+        <div class="brassage-row"><label>SERVEUR 2 :</label><input type="text" id="s2" autocomplete="off" placeholder="Département..."></div>
+        <div class="brassage-row"><label>SERVEUR 3 :</label><input type="text" id="s3" autocomplete="off" placeholder="Département..."></div>
+        <div class="brassage-row"><label>SERVEUR 4 :</label><input type="text" id="s4" autocomplete="off" placeholder="Département..."></div>
 
         <button onclick="checkBrassage()">APPLIQUER LE ROUTAGE</button>
-        <p class="error-msg" id="brassage-error">Erreur de routage. Pôles incorrects.</p>
+        <p class="error-msg" id="brassage-error">Erreur de routage.</p>
     </div>
 
     <div class="container" id="screen-allumage" style="display: none;">
-        <h2>REDÉMARRAGE À FROID</h2>
-        <p style="font-size: 0.9em;">Routage OK. Suivez strictement la <strong style="color:red;">Procédure Alpha</strong> pour allumer les modules.</p>
+        <h1>RESTAURATION FINALE</h1>
+        <h2>SÉQUENCE D'AMORÇAGE</h2>
+        <p style="font-size: 0.9em;">Routage OK. Suivez la Procédure Alpha pour relancer l'infrastructure.</p>
         
         <div class="indicator-box" id="sequence-display">- - - - -</div>
 
@@ -134,25 +199,35 @@
     </div>
 
     <div class="container exploded" id="screen-explosion" style="display: none;">
-        <div class="boom-title">💥 SURCHAUFFE 💥</div>
-        <h2>ERREUR DE SÉQUENCE</h2>
-        <p>Le système a détecté une anomalie dans la procédure de redémarrage et s'est mis en sécurité.</p>
-        <button class="btn-explosion" onclick="retryAllumage()">RÉINITIALISER LA SÉQUENCE</button>
+        <h1 class="glitch" style="font-size: 3em; color: red;">💥 ÉCHEC CRITIQUE 💥</h1>
+        <p style="color: red;">Procédure non respectée. Surchauffe immédiate des composants.</p>
+        <button style="background-color: red; color: #fff;" onclick="retryAllumage()">FORCER LE REDÉMARRAGE</button>
     </div>
 
-    <div class="container success-box" id="screen-success" style="display: none;">
+    <div class="container" id="screen-success" style="display: none;">
         <h1>✅ SYSTÈME RESTAURÉ ✅</h1>
-        <p><strong>Félicitations !</strong></p>
-        <p>La base de données et les serveurs sont de nouveau en ligne. Merci pour votre intervention.</p>
-        <button style="background-color: #fff; color: #000;" onclick="window.location.href='https://www.polymobyl.com/qui-sommes-nous/'">ACCÉDER AU SITE</button>
-        <button style="background-color: #333; color: #fff; margin-top: 10px;" onclick="restartGame()">RECOMMENCER LE JEU</button>
+        <h2 style="border:none; font-size:1.5em;">Bienvenue sur l'intranet Polymobyl</h2>
+        <p>Base de données en ligne. Ateliers opérationnels. 40 ans d'histoire sauvegardés.</p>
+        <button onclick="window.location.href='https://www.polymobyl.com/qui-sommes-nous/'">ACCÉDER AU SITE WEB</button>
+        <button style="background-color: transparent; color: var(--main-color); border: 1px solid var(--main-color); margin-top: 10px;" onclick="restartGame()">RECOMMENCER</button>
     </div>
 
     <script>
-        // Fonction globale de navigation
-        function changeScreen(currentId, nextId) {
+        // ================= GESTION DES THÈMES & NAVIGATION =================
+        // Variables pour contrôler la matrice dynamiquement
+        let matrixColor = '#0F0';
+        let matrixSpeed = 33;
+        let matrixFading = false;
+
+        function changeScreen(currentId, nextId, themeClass = null, mColor = null, mSpeed = null) {
             document.getElementById(currentId).style.display = 'none';
             document.getElementById(nextId).style.display = 'block';
+            
+            if (themeClass) {
+                document.body.className = themeClass;
+            }
+            if (mColor) matrixColor = mColor;
+            if (mSpeed) matrixSpeed = mSpeed;
         }
 
         // ================= SCÈNE 1 : CONNEXION =================
@@ -186,8 +261,8 @@
             const user = document.getElementById('username').value.trim().toUpperCase();
             const pass = document.getElementById('password').value.trim().toUpperCase();
             if (user === 'SPASCAL' && pass === '1986ALEXANDRA') {
-                // Succès : on passe directement aux logs
-                changeScreen('screen-login', 'screen-logs');
+                // Passage en mode Diagnostic (Orange)
+                changeScreen('screen-login', 'screen-logs', 'theme-diag', '#ff9d00', 60);
                 setTimeout(showLogs, 500);
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
@@ -197,14 +272,13 @@
 
         // ================= SCÈNE 2 : LES LOGS =================
         const logs = [
-            "Initialisation du système...",
-            "<span class='log-ok'>[OK] - Serveur Bureau d'études : Sauvegarde des plans.</span>",
+            "Initialisation du système de diagnostic...",
+            "<span style='color:var(--main-color)'>[OK] - Serveur Bureau d'études.</span>",
             "Vérification des protocoles...",
-            "<span class='log-ok'>[OK] - Découpe Laser : Fin de cycle en cours.</span>",
-            "<span class='log-ok'>[OK] - Thermolaquage : Température des fours stable.</span>",
-            "<span class='log-error'>[ERREUR CRITIQUE] - Intégration non autorisée sur le serveur principal.</span>",
-            "<span class='log-error'>[PANNE] - Déconnexion forcée du sous-réseau.</span>",
-            "En attente d'intervention manuelle..."
+            "<span style='color:var(--main-color)'>[OK] - Découpe Laser : Fin de cycle.</span>",
+            "<span style='color:red'>[ERREUR CRITIQUE] - Intégration non autorisée sur serveur principal.</span>",
+            "<span style='color:red'>[PANNE] - Déconnexion forcée du sous-réseau.</span>",
+            "En attente d'isolation manuelle..."
         ];
         let logIndex = 0;
         
@@ -214,16 +288,17 @@
                 logBox.innerHTML += logs[logIndex] + "<br>";
                 logBox.scrollTop = logBox.scrollHeight;
                 logIndex++;
-                setTimeout(showLogs, Math.random() * 500 + 200);
+                setTimeout(showLogs, Math.random() * 400 + 100);
             }
         }
 
         function checkIP() {
             if (document.getElementById('ip-input').value.trim() === '192.168.40.1') {
-                changeScreen('screen-logs', 'screen-brassage');
+                // Passage en mode Réparation (Cyan)
+                changeScreen('screen-logs', 'screen-brassage', 'theme-repair', '#00f0ff', 120);
             } else {
                 document.getElementById('ip-error').style.display = 'block';
-                setTimeout(() => { document.getElementById('ip-error').style.display = 'none'; }, 3000);
+                setTimeout(() => { document.getElementById('ip-error').style.display = 'none'; }, 2000);
             }
         }
 
@@ -235,10 +310,13 @@
             const s4 = document.getElementById('s4').value.trim().toUpperCase();
 
             if (s1 === 'DESIGN' && s2 === 'USINAGE' && s3 === 'PEINTURE' && s4 === 'LOGISTIQUE') {
-                changeScreen('screen-brassage', 'screen-allumage');
+                // Passage en mode Polymobyl (Clair/Marron) - On efface la matrice !
+                matrixFading = true; 
+                document.getElementById('matrix').style.opacity = '0';
+                changeScreen('screen-brassage', 'screen-allumage', 'theme-stable');
             } else {
                 document.getElementById('brassage-error').style.display = 'block';
-                setTimeout(() => { document.getElementById('brassage-error').style.display = 'none'; }, 3000);
+                setTimeout(() => { document.getElementById('brassage-error').style.display = 'none'; }, 2000);
             }
         }
 
@@ -248,57 +326,46 @@
 
         function pressBtn(sysName) {
             currentSequence.push(sysName);
-            document.getElementById('btn-' + sysName).disabled = true;
-            document.getElementById('btn-' + sysName).style.color = 'orange';
+            const btn = document.getElementById('btn-' + sysName);
+            btn.disabled = true;
+            btn.style.backgroundColor = '#ccc';
+            btn.style.color = '#fff';
 
             let displayStr = "";
-            for(let i=0; i<5; i++) {
-                displayStr += (i < currentSequence.length) ? "O " : "- ";
-            }
+            for(let i=0; i<5; i++) { displayStr += (i < currentSequence.length) ? "██ " : "- "; }
             document.getElementById('sequence-display').innerText = displayStr.trim();
 
             const currentIndex = currentSequence.length - 1;
             if (currentSequence[currentIndex] !== expectedSequence[currentIndex]) {
-                // Erreur de séquence
+                // EXPLOSION : Retour brutal au thème Hack/Rouge
+                document.body.className = '';
+                document.getElementById('matrix').style.opacity = '1';
+                matrixColor = '#f00'; matrixSpeed = 20; matrixFading = false;
                 setTimeout(() => { changeScreen('screen-allumage', 'screen-explosion'); }, 300);
             } else if (currentSequence.length === 5) {
-                // Victoire finale directe !
-                setTimeout(() => { changeScreen('screen-allumage', 'screen-success'); }, 500);
+                // VICTOIRE
+                setTimeout(() => { changeScreen('screen-allumage', 'screen-success', 'theme-stable'); }, 500);
             }
         }
 
         function retryAllumage() {
             currentSequence = [];
             document.getElementById('sequence-display').innerText = "- - - - -";
-            ['VENTILATION', 'ALIMENTATION', 'BDD', 'RESEAU', 'INTERFACE'].forEach(btn => {
-                const b = document.getElementById('btn-' + btn);
-                b.disabled = false; b.style.color = '#0f0';
+            ['VENTILATION', 'ALIMENTATION', 'BDD', 'RESEAU', 'INTERFACE'].forEach(btnName => {
+                const b = document.getElementById('btn-' + btnName);
+                b.disabled = false; b.style.backgroundColor = ''; b.style.color = '';
             });
-            changeScreen('screen-explosion', 'screen-allumage');
+            // Retour au thème Polymobyl pour réessayer
+            document.getElementById('matrix').style.opacity = '0';
+            changeScreen('screen-explosion', 'screen-allumage', 'theme-stable');
         }
 
-        // ================= RECOMMENCER LE JEU =================
+        // ================= RECOMMENCER =================
         function restartGame() {
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('ip-input').value = '';
-            document.getElementById('s1').value = '';
-            document.getElementById('s2').value = '';
-            document.getElementById('s3').value = '';
-            document.getElementById('s4').value = '';
-            
-            document.getElementById('log-content').innerHTML = '';
-            logIndex = 0;
-
-            retryAllumage(); // Réinitialise les boutons
-            
-            // Masque tout sauf l'accueil
-            const screens = ['screen-logs', 'screen-brassage', 'screen-allumage', 'screen-explosion', 'screen-success'];
-            screens.forEach(s => document.getElementById(s).style.display = 'none');
-            document.getElementById('screen-login').style.display = 'block';
+            location.reload(); // Le plus simple pour tout réinitialiser avec les animations
         }
 
-        // ================= FOND MATRIX =================
+        // ================= FOND MATRIX DYNAMIQUE =================
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -306,9 +373,15 @@
         const fontSize = 16; const columns = canvas.width / fontSize; const drops = [];
         for(let x = 0; x < columns; x++) drops[x] = 1;
 
-        function drawMatrix() {
+        let lastDraw = 0;
+        function drawMatrix(timestamp) {
+            requestAnimationFrame(drawMatrix);
+            if (timestamp - lastDraw < matrixSpeed) return;
+            lastDraw = timestamp;
+            if (matrixFading) return; // Arrête de dessiner si la matrice est cachée
+
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#0F0'; ctx.font = fontSize + 'px monospace';
+            ctx.fillStyle = matrixColor; ctx.font = fontSize + 'px monospace';
             for(let i = 0; i < drops.length; i++) {
                 const text = letters.charAt(Math.floor(Math.random() * letters.length));
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
@@ -316,7 +389,7 @@
                 drops[i]++;
             }
         }
-        setInterval(drawMatrix, 33);
+        requestAnimationFrame(drawMatrix);
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
     </script>
 </body>
