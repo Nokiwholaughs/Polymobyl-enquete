@@ -350,7 +350,10 @@
             if (user === 'SPASCAL' && pass === '1986ALEXANDRA') {
                 // Passage en mode Diagnostic (Orange)
                 changeScreen('screen-login', 'screen-logs', 'theme-diag', '#ff9d00', 60);
-                setFace(1)
+                
+                // LE VISAGE CHANGE : Le sourire se referme (Visage 1)
+                setFace(1); 
+                
                 setTimeout(showLogs, 500);
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
@@ -358,7 +361,7 @@
             }
         }
 
-        // ================= SCÈNE 2 : LES LOGS =================
+        // ================= SCÈNE 2 : LES LOGS (Inchangée) =================
         const logs = [
             "Initialisation du système de diagnostic...",
             "<span style='color:var(--main-color)'>[OK] - Serveur Bureau d'études.</span>",
@@ -382,7 +385,6 @@
 
         function checkIP() {
             if (document.getElementById('ip-input').value.trim() === '192.168.40.1') {
-                // Passage en mode Réparation (Cyan)
                 changeScreen('screen-logs', 'screen-brassage', 'theme-repair', '#00f0ff', 120);
             } else {
                 document.getElementById('ip-error').style.display = 'block';
@@ -398,11 +400,12 @@
             const s4 = document.getElementById('s4').value.trim().toUpperCase();
 
             if (s1 === 'DESIGN' && s2 === 'USINAGE' && s3 === 'PEINTURE' && s4 === 'LOGISTIQUE') {
-                // Passage en mode Polymobyl (Clair/Marron) - On efface la matrice !
                 matrixFading = true; 
                 document.getElementById('matrix').style.opacity = '0';
                 changeScreen('screen-brassage', 'screen-allumage', 'theme-stable');
-                setFace(2);
+                
+                // LE VISAGE CHANGE : La mâchoire tombe, choqué (Visage 2)
+                setFace(2); 
             } else {
                 document.getElementById('brassage-error').style.display = 'block';
                 setTimeout(() => { document.getElementById('brassage-error').style.display = 'none'; }, 2000);
@@ -426,15 +429,22 @@
 
             const currentIndex = currentSequence.length - 1;
             if (currentSequence[currentIndex] !== expectedSequence[currentIndex]) {
-                // EXPLOSION : Retour brutal au thème Hack/Rouge
+                // EXPLOSION 
                 document.body.className = '';
                 document.getElementById('matrix').style.opacity = '1';
                 matrixColor = '#f00'; matrixSpeed = 20; matrixFading = false;
+                
+                // LE HACKER REPREND CONFIANCE : Il retrouve son grand sourire (Visage 0)
+                setFace(0); 
+                
                 setTimeout(() => { changeScreen('screen-allumage', 'screen-explosion'); }, 300);
             } else if (currentSequence.length === 5) {
                 // VICTOIRE
-                setTimeout(() => { changeScreen('screen-allumage', 'screen-success', 'theme-stable'); }, 500);
+                
+                // LE VISAGE CHANGE : Il disparaît/meurt (Visage 3)
                 setFace(3);
+                
+                setTimeout(() => { changeScreen('screen-allumage', 'screen-success', 'theme-stable'); }, 500);
             }
         }
 
