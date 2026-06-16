@@ -26,21 +26,21 @@
             --main-color: #00f0ff;
             --border-style: 1px solid var(--main-color);
             --box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
-            --font-family: 'Arial', sans-serif; /* Police plus propre */
+            --font-family: 'Arial', sans-serif;
         }
 
-        /* Thème 4 : Polymobyl (Marron & Épuré) */
+        /* Thème 4 : Polymobyl (Orange Officiel & Épuré) */
         body.theme-stable {
-            --main-color: #5A3A22; /* Le véritable Marron Polymobyl */
-            --bg-color: rgba(255, 255, 255, 0.85); 
+            --main-color: #FF6600; /* Le vrai Orange Polymobyl */
+            --bg-color: rgba(255, 255, 255, 0.95); 
             --border-style: none;
             --box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #333;
-            background-color: transparent; 
+            background-color: #000; 
         }
 
-       /* ================= VISAGE DU HACKER (TERRIFIANT) ================= */
+        /* ================= VISAGE DU HACKER (TERRIFIANT) ================= */
         #hacker-face {
             position: fixed;
             top: 50%;
@@ -48,27 +48,25 @@
             width: 100vw;
             transform: translate(-50%, -50%);
             font-family: monospace;
-            font-size: 2.2vw; /* Taille ajustée pour les dents */
+            font-size: 2.2vw; 
             line-height: 1;
             font-weight: bold;
             color: var(--main-color);
-            z-index: 999; /* LA CLÉ EST ICI : Par-dessus l'interface ! */
-            opacity: 0.25; /* Fantomatique */
+            z-index: 999; /* Par-dessus l'interface */
+            opacity: 0.25; 
             margin: 0;
-            pointer-events: none; /* Laisse passer les clics de souris au travers */
+            pointer-events: none; /* Laisse passer les clics de souris */
             text-align: center;
             text-shadow: 0 0 15px var(--main-color);
-            mix-blend-mode: screen; /* Donne un effet d'hologramme/lumière */
+            mix-blend-mode: screen; 
             animation: creep-breath 3s infinite alternate, creep-glitch 4s infinite;
         }
 
-        /* Respiration menaçante (zoom lent et flou) */
         @keyframes creep-breath {
             0% { transform: translate(-50%, -50%) scale(1); opacity: 0.15; filter: blur(2px); }
             100% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.4; filter: blur(0px); }
         }
 
-        /* Glitch violent et aléatoire (Sursaut) */
         @keyframes creep-glitch {
             0%, 94%, 100% { clip-path: inset(0 0 0 0); transform: translate(-50%, -50%); color: var(--main-color); }
             95% { clip-path: inset(10% 0 80% 0); transform: translate(-52%, -48%); color: red; }
@@ -83,12 +81,11 @@
             font-family: var(--font-family);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; margin: 0; text-align: center; overflow: hidden;
-            transition: all 1s ease; /* Transition douce entre les thèmes */
+            transition: all 1s ease;
         }
         
         canvas { position: fixed; top: 0; left: 0; z-index: -2; transition: opacity 2s; }
 
-        /* Effet Scanlines (Lignes d'écran cathodique) */
         .scanlines {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
@@ -109,7 +106,6 @@
 
         body.theme-stable .container { border-radius: 15px; border-top: 5px solid var(--main-color); }
         
-        /* Titres & Textes */
         h1 { color: red; }
         body.theme-diag h1 { color: var(--main-color); font-size: 1.8em; }
         body.theme-repair h1 { color: var(--main-color); font-size: 1.8em; letter-spacing: 2px;}
@@ -118,7 +114,6 @@
         h2 { color: var(--main-color); border-bottom: 1px solid var(--main-color); padding-bottom: 10px; margin-top: 0; transition: color 1s; }
         body.theme-stable h2 { color: #333; border-bottom: 2px solid var(--main-color); }
 
-        /* Effet Glitch (Uniquement au début) */
         .glitch { animation: glitch-skew 1s infinite linear alternate-reverse; position: relative; }
         @keyframes glitch-skew {
             0% { transform: skew(0deg); } 20% { transform: skew(-10deg); }
@@ -126,7 +121,6 @@
             80% { transform: skew(5deg); } 100% { transform: skew(0deg); }
         }
 
-        /* Formulaires & Boutons */
         input {
             background-color: transparent; color: var(--main-color); border: 1px solid var(--main-color);
             padding: 12px; margin: 10px 0; width: calc(100% - 26px);
@@ -146,14 +140,13 @@
         button:hover { background-color: #fff; box-shadow: 0 0 15px #fff; transform: translateY(-2px); }
         
         body.theme-stable button { color: #fff; border-radius: 5px; }
-        body.theme-stable button:hover { background-color: #3e2716; box-shadow: 0 5px 15px rgba(90, 58, 34, 0.3); }
+        body.theme-stable button:hover { background-color: var(--main-color); box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3); }
 
         .hint { font-size: 0.9em; color: #aaa; margin: 5px 0; min-height: 1.2em; text-align: left; }
         body.theme-stable .hint { color: #666; }
         .cursor::after { content: '█'; animation: blink 1s infinite; margin-left: 5px;}
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* Spécifique aux étapes */
         .log-box { height: 150px; overflow-y: hidden; text-align: left; font-size: 0.85em; border: 1px solid var(--main-color); padding: 15px; margin-bottom: 20px; color: #ccc; background: rgba(0,0,0,0.5); }
         .brassage-row { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; text-align: left; }
         .brassage-row label { font-weight: bold; width: 40%; font-size: 0.9em; }
@@ -253,7 +246,6 @@
 
     <script>
         // ================= GESTION DES THÈMES & NAVIGATION =================
-        // Variables pour contrôler la matrice dynamiquement
         let matrixColor = '#0F0';
         let matrixSpeed = 33;
         let matrixFading = false;
@@ -269,7 +261,7 @@
             if (mSpeed) matrixSpeed = mSpeed;
         }
 
-     // ================= VISAGES DU HACKER (ANALOG HORROR) =================
+        // ================= VISAGES DU HACKER (ANALOG HORROR) =================
         const faces = [
             // 0. Le Sourire de Psychopathe (Début) - Dents apparentes
             "      .▄████▄.          .▄████▄.      \n" +
@@ -348,12 +340,8 @@
             const user = document.getElementById('username').value.trim().toUpperCase();
             const pass = document.getElementById('password').value.trim().toUpperCase();
             if (user === 'SPASCAL' && pass === '1986ALEXANDRA') {
-                // Passage en mode Diagnostic (Orange)
                 changeScreen('screen-login', 'screen-logs', 'theme-diag', '#ff9d00', 60);
-                
-                // LE VISAGE CHANGE : Le sourire se referme (Visage 1)
-                setFace(1); 
-                
+                setFace(1); // Le visage change (Niveau 1)
                 setTimeout(showLogs, 500);
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
@@ -361,7 +349,7 @@
             }
         }
 
-        // ================= SCÈNE 2 : LES LOGS (Inchangée) =================
+        // ================= SCÈNE 2 : LES LOGS =================
         const logs = [
             "Initialisation du système de diagnostic...",
             "<span style='color:var(--main-color)'>[OK] - Serveur Bureau d'études.</span>",
@@ -403,9 +391,7 @@
                 matrixFading = true; 
                 document.getElementById('matrix').style.opacity = '0';
                 changeScreen('screen-brassage', 'screen-allumage', 'theme-stable');
-                
-                // LE VISAGE CHANGE : La mâchoire tombe, choqué (Visage 2)
-                setFace(2); 
+                setFace(2); // Le visage change (Niveau 2)
             } else {
                 document.getElementById('brassage-error').style.display = 'block';
                 setTimeout(() => { document.getElementById('brassage-error').style.display = 'none'; }, 2000);
@@ -433,17 +419,11 @@
                 document.body.className = '';
                 document.getElementById('matrix').style.opacity = '1';
                 matrixColor = '#f00'; matrixSpeed = 20; matrixFading = false;
-                
-                // LE HACKER REPREND CONFIANCE : Il retrouve son grand sourire (Visage 0)
-                setFace(0); 
-                
+                setFace(0); // Le visage sourit à nouveau
                 setTimeout(() => { changeScreen('screen-allumage', 'screen-explosion'); }, 300);
             } else if (currentSequence.length === 5) {
                 // VICTOIRE
-                
-                // LE VISAGE CHANGE : Il disparaît/meurt (Visage 3)
-                setFace(3);
-                
+                setFace(3); // Le visage meurt
                 setTimeout(() => { changeScreen('screen-allumage', 'screen-success', 'theme-stable'); }, 500);
             }
         }
@@ -455,15 +435,13 @@
                 const b = document.getElementById('btn-' + btnName);
                 b.disabled = false; b.style.backgroundColor = ''; b.style.color = '';
             });
-            // Retour au thème Polymobyl pour réessayer
             document.getElementById('matrix').style.opacity = '0';
             changeScreen('screen-explosion', 'screen-allumage', 'theme-stable');
         }
 
         // ================= RECOMMENCER =================
         function restartGame() {
-            location.reload(); // Le plus simple pour tout réinitialiser avec les animations
-            setFace(0);
+            location.reload(); 
         }
 
         // ================= FOND MATRIX DYNAMIQUE =================
@@ -479,7 +457,7 @@
             requestAnimationFrame(drawMatrix);
             if (timestamp - lastDraw < matrixSpeed) return;
             lastDraw = timestamp;
-            if (matrixFading) return; // Arrête de dessiner si la matrice est cachée
+            if (matrixFading) return; 
 
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = matrixColor; ctx.font = fontSize + 'px monospace';
