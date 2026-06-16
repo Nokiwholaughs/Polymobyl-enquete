@@ -58,7 +58,6 @@
             pointer-events: none; /* Laisse passer les clics de souris */
             text-align: center;
             text-shadow: 0 0 15px var(--main-color);
-            mix-blend-mode: screen; 
             animation: creep-breath 3s infinite alternate, creep-glitch 4s infinite;
         }
 
@@ -388,10 +387,9 @@
             const s4 = document.getElementById('s4').value.trim().toUpperCase();
 
             if (s1 === 'DESIGN' && s2 === 'USINAGE' && s3 === 'PEINTURE' && s4 === 'LOGISTIQUE') {
-                matrixFading = true; 
-                document.getElementById('matrix').style.opacity = '0';
-                changeScreen('screen-brassage', 'screen-allumage', 'theme-stable');
-                setFace(2); // Le visage change (Niveau 2)
+                // On garde l'ambiance sombre (theme-repair) pour la tension !
+                changeScreen('screen-brassage', 'screen-allumage', 'theme-repair');
+                setFace(2); // Le visage change (Choqué)
             } else {
                 document.getElementById('brassage-error').style.display = 'block';
                 setTimeout(() => { document.getElementById('brassage-error').style.display = 'none'; }, 2000);
@@ -417,13 +415,17 @@
             if (currentSequence[currentIndex] !== expectedSequence[currentIndex]) {
                 // EXPLOSION 
                 document.body.className = '';
-                document.getElementById('matrix').style.opacity = '1';
-                matrixColor = '#f00'; matrixSpeed = 20; matrixFading = false;
+                matrixColor = '#f00'; matrixSpeed = 20; 
                 setFace(0); // Le visage sourit à nouveau
                 setTimeout(() => { changeScreen('screen-allumage', 'screen-explosion'); }, 300);
             } else if (currentSequence.length === 5) {
-                // VICTOIRE
+                // VICTOIRE FINALE
                 setFace(3); // Le visage meurt
+                
+                // C'est SEULEMENT ICI qu'on efface la matrice et qu'on passe au thème clair
+                matrixFading = true; 
+                document.getElementById('matrix').style.opacity = '0';
+                
                 setTimeout(() => { changeScreen('screen-allumage', 'screen-success', 'theme-stable'); }, 500);
             }
         }
@@ -435,8 +437,8 @@
                 const b = document.getElementById('btn-' + btnName);
                 b.disabled = false; b.style.backgroundColor = ''; b.style.color = '';
             });
-            document.getElementById('matrix').style.opacity = '0';
-            changeScreen('screen-explosion', 'screen-allumage', 'theme-stable');
+            // Retour au thème de réparation (sombre)
+            changeScreen('screen-explosion', 'screen-allumage', 'theme-repair');
         }
 
         // ================= RECOMMENCER =================
