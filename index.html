@@ -222,11 +222,11 @@
         
         <div class="indicator-box" id="sequence-display">- - - - -</div>
 
-        <button class="sys-btn" id="btn-VENTILATION" onclick="pressBtn('VENTILATION')">1. VENTILATION</button>
-        <button class="sys-btn" id="btn-ALIMENTATION" onclick="pressBtn('ALIMENTATION')">2. ALIMENTATION</button>
-        <button class="sys-btn" id="btn-BDD" onclick="pressBtn('BDD')">3. BASE DE DONNÉES</button>
-        <button class="sys-btn" id="btn-RESEAU" onclick="pressBtn('RESEAU')">4. RÉSEAU EXTÉRIEUR</button>
-        <button class="sys-btn" id="btn-INTERFACE" onclick="pressBtn('INTERFACE')">5. INTERFACE UTILISATEUR</button>
+        <button class="sys-btn" id="btn-INTERFACE" onclick="pressBtn('INTERFACE')">1. INTERFACE UTILISATEUR</button>
+        <button class="sys-btn" id="btn-VENTILATION" onclick="pressBtn('VENTILATION')">2. VENTILATION</button>
+        <button class="sys-btn" id="btn-RESEAU" onclick="pressBtn('RESEAU')">3. RÉSEAU EXTÉRIEUR</button>
+        <button class="sys-btn" id="btn-BDD" onclick="pressBtn('BDD')">4. BASE DE DONNÉES</button>
+        <button class="sys-btn" id="btn-ALIMENTATION" onclick="pressBtn('ALIMENTATION')">5. ALIMENTATION</button>
     </div>
 
     <div class="container exploded" id="screen-explosion" style="display: none;">
@@ -386,7 +386,7 @@
             const s3 = document.getElementById('s3').value.trim().toUpperCase();
             const s4 = document.getElementById('s4').value.trim().toUpperCase();
 
-            if (s1 === 'DESIGN' && s2 === 'USINAGE' && s3 === 'PEINTURE' && s4 === 'LOGISTIQUE') {
+            if (s1 === 'DESIGN' && s2 === 'BUREAU ETUDE' && s3 === 'MONTAGE' && s4 === 'LOGISTIQUE') {
                 // On garde l'ambiance sombre (theme-repair) pour la tension !
                 changeScreen('screen-brassage', 'screen-allumage', 'theme-repair');
                 setFace(2); // Le visage change (Choqué)
