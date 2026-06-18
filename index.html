@@ -195,7 +195,7 @@
         
         <div class="log-box" id="log-content"></div>
 
-        <p style="font-size: 0.9em;">Identifiez la source du plantage en donnant l'adresse IP manquante.</p>
+        <p style="font-size: 0.9em;">Identifiez la source du plantage en donnant l'adresse IP manquante visible dans le SYSTEM_LOG_EXPORT</p>
         <input type="text" id="ip-input" placeholder="IP CIBLE..." autocomplete="off">
         <button onclick="checkIP()">ISOLER LA CIBLE</button>
         <p class="error-msg" id="ip-error">IP Introuvable.</p>
@@ -205,7 +205,8 @@
         <h1>CONNEXION SÉCURISÉE</h1>
         <h2>ROUTAGE DES SERVEURS</h2>
         <p style="font-size: 0.9em;">Connexion (192.168.40.1) établie. Rétablissez les flux vers les ateliers.</p>
-
+        <p style="font-size: 0.9em;">Voir NOTE DE SERVICE - CÂBLAGE BAIE DE BRASSAGE</p>
+        
         <div class="brassage-row"><label>SERVEUR 1 :</label><input type="text" id="s1" autocomplete="off" placeholder="Département..."></div>
         <div class="brassage-row"><label>SERVEUR 2 :</label><input type="text" id="s2" autocomplete="off" placeholder="Département..."></div>
         <div class="brassage-row"><label>SERVEUR 3 :</label><input type="text" id="s3" autocomplete="off" placeholder="Département..."></div>
@@ -219,6 +220,7 @@
         <h1>RESTAURATION FINALE</h1>
         <h2>SÉQUENCE D'AMORÇAGE</h2>
         <p style="font-size: 0.9em;">Routage OK. Suivez la Procédure Alpha pour relancer l'infrastructure.</p>
+        <p style="font-size: 0.9em;">Voir POLYMOBYL - DIRECTION DES SYSTÈMES D'INFORMATION</p>
         
         <div class="indicator-box" id="sequence-display">- - - - -</div>
 
