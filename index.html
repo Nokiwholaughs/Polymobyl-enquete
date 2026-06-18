@@ -195,7 +195,7 @@
         
         <div class="log-box" id="log-content"></div>
 
-        <p style="font-size: 0.9em;">Identifiez la source du plantage et isolez la machine.</p>
+        <p style="font-size: 0.9em;">Identifiez la source du plantage en donnant l'adresse IP manquante.</p>
         <input type="text" id="ip-input" placeholder="IP CIBLE..." autocomplete="off">
         <button onclick="checkIP()">ISOLER LA CIBLE</button>
         <p class="error-msg" id="ip-error">IP Introuvable.</p>
@@ -310,8 +310,8 @@
         
         // ================= SCÈNE 1 : CONNEXION =================
         const hints = [
-            "\"Mon nom est celui qui régit... avec la première lettre de mon prénom au début\"",
-            "\"Je suis né le jour où l'entreprise c'est créée...\"",
+            "\"Mon nom est celui qui régit... avec la première lettre de mon prénom au début.\"",
+            "\"Je suis né l'année où l'entreprise s'est créée...\"",
             "\"...et ma femme a inspiré ma sécurité.\""
         ];
         let currentHint = 0; let currentChar = 0;
